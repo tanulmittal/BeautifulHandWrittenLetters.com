@@ -97,52 +97,84 @@ def create_a4_canvas_with_text(user_text):
     canvas.save(img_bytes, format='PNG')
     img_bytes.seek(0)
 
-    # Display the image
-    st.image(canvas, caption='Generated Image', use_column_width=True)
-
-    # Print confirmation message
-    st.success("Image generated")
-
-    # Add download button
-    st.download_button(
-        label="Download Image",
-        data=img_bytes,
-        file_name='a4_canvas_with_text.png',
-        mime='image/png'
-    )
+    return canvas, img_bytes
 
 # Main function to handle user choices
 def main():
     st.title("Beautiful Hand Written Letters")
 
-    choice = st.radio("Choose an option:", ("Input text manually", "Use OpenAI API key"))
+    # Buttons section
+    st.markdown("""
+    <div style="display: flex; gap: 10px;">
+        <a href="https://x.com/soundhumor" target="_blank">
+            <button style="background-color: #FF5F5F; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 4px;">Give me feedback</button>
+        </a>
+        <a href="https://buymeacoffee.com/tanulmittal" target="_blank">
+            <button style="background-color: #FF5F5F; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 4px;">Buy me a coffee</button>
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
 
-    if choice == 'Input text manually':
-        user_text = st.text_area("Enter your text:")
-        if st.button("Generate Image"):
-            create_a4_canvas_with_text(user_text)
-    elif choice == 'Use OpenAI API key':
-        api_key = st.text_input("Enter your OpenAI API key:", type="password")
-        prompt_instructions = read_prompt_instructions('prompt.txt')
-        
-        recipient = st.text_input("Name of the person you are sending to:")
-        context = st.text_input("Provide some context for the letter:")
-        user_name = st.text_input("What is your name?:")
-        sending_to = st.text_input("Describe your relation with this person:")
-        additional_info = st.text_input("Any additional information you want to include?")
+    # Instructions section
+    st.markdown("""
+    ### Instructions
+    1. Choose to input text manually or use an OpenAI API key (requires technical knowledge).
+    2. Fill in the required fields.
+    3. For manual input, use 120 words for best results.
+    4. Click "Generate Image" to create your handwritten letter.
+    5. ownload the image using the download button.
+    6. If you like the app, please support to keep the project going.
+    7. Share your feedback to help improve the app.
+    """)
 
-        if st.button("Generate Image"):
-            prompt = f"""
-            {prompt_instructions}
+    # Create two columns
+    col1, col2 = st.columns(2)
 
-            Recipient: {recipient}
-            Context: {context}
-            Sender: {user_name}
-            Sending to: {sending_to}
-            Additional Information: {additional_info}
-            """
-            generated_text = generate_text(prompt, api_key)
-            create_a4_canvas_with_text(generated_text)
+    with col1:
+        choice = st.radio("Choose an option:", ("Input text manually", "Use OpenAI API key"))
+
+        if choice == 'Input text manually':
+            user_text = st.text_area("Enter your text:")
+            if st.button("Generate Image"):
+                canvas, img_bytes = create_a4_canvas_with_text(user_text)
+                with col2:
+                    st.image(canvas, caption='Generated Image', use_column_width=True)
+                    st.download_button(
+                        label="Download Image",
+                        data=img_bytes,
+                        file_name='a4_canvas_with_text.png',
+                        mime='image/png'
+                    )
+        elif choice == 'Use OpenAI API key':
+            api_key = st.text_input("Enter your OpenAI API key:", type="password")
+            prompt_instructions = read_prompt_instructions('prompt.txt')
+            
+            recipient = st.text_input("Name of the person you are sending to:")
+            context = st.text_input("Provide some context for the letter:")
+            user_name = st.text_input("What is your name?:")
+            sending_to = st.text_input("Describe your relation with this person:")
+            additional_info = st.text_input("Any additional information you want to include?")
+
+            if st.button("Generate Image"):
+                prompt = f"""
+                {prompt_instructions}
+
+                Recipient: {recipient}
+                Context: {context}
+                Sender: {user_name}
+                Sending to: {sending_to}
+                Additional Information: {additional_info}
+                """
+                generated_text = generate_text(prompt, api_key)
+                canvas, img_bytes = create_a4_canvas_with_text(generated_text)
+                with col2:
+                    st.image(canvas, caption='Generated Image', use_column_width=True)
+                    st.download_button(
+                        label="Download Image",
+                        data=img_bytes,
+                        file_name='a4_canvas_with_text.png',
+                        mime='image/png'
+                    )
 
 if __name__ == "__main__":
     main()
