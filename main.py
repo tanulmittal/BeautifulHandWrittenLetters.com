@@ -1,6 +1,7 @@
 import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 from openai import OpenAI
+import io
 
 # Function to read the OpenAI API key from a file
 def read_api_key(file_path):
@@ -91,14 +92,24 @@ def create_a4_canvas_with_text(user_text):
     # Draw the wrapped text on the canvas
     draw.multiline_text((text_x, text_y), wrapped_text, fill=text_color, font=font, spacing=40)
 
-    # Save the image
-    canvas.save('a4_canvas_with_text.png')
+    # Save the image to a BytesIO object
+    img_bytes = io.BytesIO()
+    canvas.save(img_bytes, format='PNG')
+    img_bytes.seek(0)
 
     # Display the image
     st.image(canvas, caption='Generated Image', use_column_width=True)
 
     # Print confirmation message
     st.success("Image generated")
+
+    # Add download button
+    st.download_button(
+        label="Download Image",
+        data=img_bytes,
+        file_name='a4_canvas_with_text.png',
+        mime='image/png'
+    )
 
 # Main function to handle user choices
 def main():
