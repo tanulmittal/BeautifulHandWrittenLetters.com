@@ -1,8 +1,30 @@
+'''
+Updated changes:
+
+Program 0.1
+
+    1. Allows user to input text
+    2. Allows user to use open ai key
+    3. Outputs image using python3 main.py
+
+Program 0.2
+
+    1. Added streamlit functionality
+
+'''
+
+
+import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 from openai import OpenAI
 
 # Function to read the OpenAI API key from a file
 def read_api_key(file_path):
+    with open(file_path, 'r') as file:
+        return file.read().strip()
+
+# Function to read prompt instructions from a file
+def read_prompt_instructions(file_path):
     with open(file_path, 'r') as file:
         return file.read().strip()
 
@@ -49,7 +71,7 @@ def create_a4_canvas_with_text(user_text):
         canvas = Image.open('texture.png')
         canvas = canvas.resize((a4_width, a4_height))  # Resize to A4 size
     except IOError:
-        print("Texture image 'texture.png' not found. Using white background.")
+        st.error("Texture image 'texture.png' not found. Using white background.")
         canvas = Image.new('RGB', (a4_width, a4_height), 'white')
 
     # Initialize ImageDraw
@@ -64,7 +86,7 @@ def create_a4_canvas_with_text(user_text):
         try:
             font = ImageFont.truetype(font_path, font_size)
         except IOError:
-            print(f"Font file '{font_path}' not found. Using default font.")
+            st.error(f"Font file '{font_path}' not found. Using default font.")
             font = ImageFont.load_default()
 
         # Wrap the text
@@ -88,40 +110,44 @@ def create_a4_canvas_with_text(user_text):
     # Save the image
     canvas.save('a4_canvas_with_text.png')
 
+    # Display the image
+    st.image(canvas, caption='Generated Image', use_column_width=True)
+
     # Print confirmation message
-    print("Image generated")
+    st.success("Image generated")
 
-# Read the OpenAI API key
-api_key = read_api_key('key.txt')
+# Main function to handle user choices
+def main():
+    st.title("Beautiful Hand Written Letters")
 
-# Read the prompt instructions from the file
-with open('prompt.txt', 'r') as file:
-    prompt_instructions = file.read()
+    choice = st.radio("Choose an option:", ("Input text manually", "Use OpenAI API key"))
 
-# Prompt the user for inputs
-recipient = input("Name of the person you are sending to: ")
-context = input("Provide some context for the letter: ")
-user_name = input("What is your name?: ")
-sending_to = input("Describe your relation with this person: ")
-additional_info = input("Any additional information you want to include? ")
+    if choice == 'Input text manually':
+        user_text = st.text_area("Enter your text:")
+        if st.button("Generate Image"):
+            create_a4_canvas_with_text(user_text)
+    elif choice == 'Use OpenAI API key':
+        api_key = st.text_input("Enter your OpenAI API key:", type="password")
+        prompt_instructions = read_prompt_instructions('prompt.txt')
+        
+        recipient = st.text_input("Name of the person you are sending to:")
+        context = st.text_input("Provide some context for the letter:")
+        user_name = st.text_input("What is your name?:")
+        sending_to = st.text_input("Describe your relation with this person:")
+        additional_info = st.text_input("Any additional information you want to include?")
 
-# Create the prompt for the OpenAI model following the instructions
-prompt = f"""
-{prompt_instructions}
+        if st.button("Generate Image"):
+            prompt = f"""
+            {prompt_instructions}
 
-Recipient: {recipient}
-Context: {context}
-Sender: {user_name}
-Sending to: {sending_to}
-Additional Information: {additional_info}
-"""
+            Recipient: {recipient}
+            Context: {context}
+            Sender: {user_name}
+            Sending to: {sending_to}
+            Additional Information: {additional_info}
+            """
+            generated_text = generate_text(prompt, api_key)
+            create_a4_canvas_with_text(generated_text)
 
-# Generate text using OpenAI GPT-3.5 Turbo
-generated_text = generate_text(prompt, api_key)
-
-# Save the generated text to input.txt
-with open('input.txt', 'w') as file:
-    file.write(generated_text)
-
-# Create the canvas with the generated text
-create_a4_canvas_with_text(generated_text)
+if __name__ == "__main__":
+    main()
