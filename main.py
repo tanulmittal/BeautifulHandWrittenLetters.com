@@ -1,19 +1,3 @@
-'''
-Updated changes:
-
-Program 0.1
-
-    1. Allows user to input text
-    2. Allows user to use open ai key
-    3. Outputs image using python3 main.py
-
-Program 0.2
-
-    1. Added streamlit functionality
-
-'''
-
-
 import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 from openai import OpenAI
