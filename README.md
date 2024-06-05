@@ -7,7 +7,7 @@
         <a href="https://buymeacoffee.com/tanulmittal" target="_blank">
             <button style="background-color: #FF5F5F; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 4px;">Buy me a coffee</button>
         </a>
-    </div>
+    </div><br>
 
 
 
