@@ -103,6 +103,13 @@ def create_a4_canvas_with_text(user_text):
 def main():
     st.title("Beautiful Hand Written Letters")
 
+    # Initialize the image counter in session state
+    if 'image_counter' not in st.session_state:
+        st.session_state.image_counter = 215  # Initial value for the image counter
+
+    # Display the current image counter
+    st.write(f"Total images generated: {st.session_state.image_counter}")
+
     # Buttons section
     st.markdown("""
     <div style="display: flex; gap: 10px;">
@@ -122,7 +129,7 @@ def main():
     2. Fill in the required fields.
     3. For manual input, use 120 words for best results.
     4. Click "Generate Image" to create your handwritten letter.
-    5. ownload the image using the download button.
+    5. Download the image using the download button.
     6. If you like the app, please support to keep the project going.
     7. Share your feedback to help improve the app.
     """)
@@ -137,6 +144,7 @@ def main():
             user_text = st.text_area("Enter your text:")
             if st.button("Generate Image"):
                 canvas, img_bytes = create_a4_canvas_with_text(user_text)
+                st.session_state.image_counter += 1  # Increment the counter
                 with col2:
                     st.image(canvas, caption='Generated Image', use_column_width=True)
                     st.download_button(
@@ -167,6 +175,7 @@ def main():
                 """
                 generated_text = generate_text(prompt, api_key)
                 canvas, img_bytes = create_a4_canvas_with_text(generated_text)
+                st.session_state.image_counter += 1  # Increment the counter
                 with col2:
                     st.image(canvas, caption='Generated Image', use_column_width=True)
                     st.download_button(
