@@ -105,7 +105,7 @@ def main():
 
     # Initialize the image counter in session state
     if 'image_counter' not in st.session_state:
-        st.session_state.image_counter = 215  # Initial value for the image counter
+        st.session_state.image_counter = 0  # Initial value for the image counter
 
     # Display the current image counter
     st.write(f"Total images generated: {st.session_state.image_counter}")
